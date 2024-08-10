@@ -17,6 +17,7 @@ contract HelperConfig is Script {
     uint256 constant LOCAL_CHAIN_ID = 31337;
 
     address constant BURNER_WALLET = 0x6D966303C161995E42e695a4E8336aCF4CA77ECb;
+    address constant FOUNDRY_DEFAULT_WALLET = 0x70997970C51812dc3A010C7d01b50e0d17dc79C8;
     address constant ANVIL_DEFAULT_ACCOUNT = 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266;
 
     NetworkConfig public localNetworkConfig;
@@ -58,5 +59,6 @@ contract HelperConfig is Script {
         if (localNetworkConfig.account != address(0)) {
             return localNetworkConfig;
         }
+        return NetworkConfig({entryPoint: address(0), account: FOUNDRY_DEFAULT_WALLET});
     }
 }
