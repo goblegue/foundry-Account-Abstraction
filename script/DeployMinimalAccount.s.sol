@@ -20,5 +20,4 @@ contract DeployMinimalAccount is Script {
         vm.stopBroadcast();
         return (helperConfig, minimalAccount);
     }
-
 }

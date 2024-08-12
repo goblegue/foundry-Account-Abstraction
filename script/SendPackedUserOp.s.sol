@@ -8,19 +8,19 @@ import {HelperConfig} from "./HelperConfig.s.sol";
 import {IEntryPoint} from "@account-abstraction/contracts/interfaces/IEntryPoint.sol";
 import {MessageHashUtils} from "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
 
+
 contract SendPackedUserOp is Script {
     using MessageHashUtils for bytes32;
-    
 
     function run() public {}
 
-    function getSignedUserOp(bytes memory callData, HelperConfig.NetworkConfig memory config)
+    function getSignedUserOp(bytes memory callData, HelperConfig.NetworkConfig memory config,address minimalAccount )
         public
         view
         returns (PackedUserOperation memory)
     {
-        uint256 nonce = vm.getNonce(config.account) - 1;
-        PackedUserOperation memory userOp = getUnSignedUserOp(callData, config.account, nonce);
+        uint256 nonce = vm.getNonce(minimalAccount) - 1;
+        PackedUserOperation memory userOp = getUnSignedUserOp(callData, minimalAccount, nonce);
 
         bytes32 userOpHash = IEntryPoint(config.entryPoint).getUserOpHash(userOp);
         bytes32 digest = userOpHash.toEthSignedMessageHash();
@@ -28,11 +28,10 @@ contract SendPackedUserOp is Script {
         bytes32 r;
         bytes32 s;
         uint256 ANVIL_DEFAULT_WALLET = 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80;
-        if(block.chainid==31337){
-        (v,r,s)=vm.sign(ANVIL_DEFAULT_WALLET,digest);
-        }
-        else{
-            (v,r,s)=vm.sign(config.account,digest);
+        if (block.chainid == 31337) {
+            (v, r, s) = vm.sign(ANVIL_DEFAULT_WALLET, digest);
+        } else {
+            (v, r, s) = vm.sign(config.account, digest);
         }
         userOp.signature = abi.encodePacked(r, s, v);
         return userOp;
